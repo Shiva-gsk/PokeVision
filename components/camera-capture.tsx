@@ -77,7 +77,7 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
             Take Photo
           </Button>
           <div className="relative">
-            <Button variant="outline" onClick={handleUploadClick} className="w-full">
+            <Button  variant="outline" onClick={handleUploadClick} className="w-full">
               <Upload className="mr-2 h-4 w-4" />
               Upload Image
             </Button>
