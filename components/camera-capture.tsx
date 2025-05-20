@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Resizer from "react-image-file-resizer";
 import { useState, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Camera, Upload } from "lucide-react"
@@ -28,18 +28,30 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
     }
   }, [webcamRef, onCapture])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          onCapture(reader.result)
-        }
-      }
-      reader.readAsDataURL(file)
-    }
+  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0]
+  //   // const image = await resizeFile(file);
+  //   if (file) {
+  //     const reader = new FileReader()
+  //     reader.onloadend = () => {
+  //       if (typeof reader.result === "string") {
+  //         onCapture(reader.result)
+  //       }
+  //     }
+  //     reader.readAsDataURL(file)
+  //   }
+  // }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const resizedBase64 = await resizeFile(file)
+  if (resizedBase64 && typeof resizedBase64 === "string") {
+    onCapture(resizedBase64)
   }
+}
+
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -87,4 +99,24 @@ export function CameraCapture({ onCapture }: CameraCaptureProps) {
       )}
     </div>
   )
+}
+
+const resizeFile = (file: File | undefined) =>{
+  if (!file) {
+    return Promise.resolve(null)
+}
+  return new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      300,
+      300,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      "base64"
+    );
+  });
 }

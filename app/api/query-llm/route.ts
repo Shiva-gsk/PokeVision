@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         {
           role: 'user',
           content: [
-            { type: 'text', text: prompt || 'Identify this Pokémon.' },
+            { type: 'text', text: prompt || 'Identify this Pokémon, If its not a pokemon return most related pokemon details.' },
             {
               type: 'image_url',
               image_url: {

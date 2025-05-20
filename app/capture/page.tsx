@@ -76,13 +76,13 @@ export default function CapturePage() {
 
           Only return the JSON. Do not include any extra text.
 
-          What Pokémon is in this image?`,
+          What Pokémon is in this image? If its not a pokemon return most related pokemon details. Just return JSON as above and dont include any extra text like \`\`\`json.`,
         }),
       });
 
       const data = await res.json();
       try {
-        const parsed = JSON.parse(data.response)
+        const parsed = JSON.parse(data.response);
         console.log("API response:", parsed);
         setResult(parsed)
       } catch (e) {
@@ -182,3 +182,7 @@ export default function CapturePage() {
     </div>
   );
 }
+
+
+import Resizer from "react-image-file-resizer";
+
