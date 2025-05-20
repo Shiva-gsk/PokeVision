@@ -22,9 +22,13 @@ export async function middleware(req: NextRequest) {
 
   if (isApiAuth) return NextResponse.next();
 
-  // if (isAuth && isLoggedIn) {
-  //   return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
-  // }
+  if(isAuth){
+    if(isLoggedIn){
+      console.log("is logged in");
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return undefined;
+  }
 
   if (!isPublic && !isLoggedIn) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
