@@ -60,10 +60,10 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-red-600 via-yellow-500 to-blue-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-red-600  to-yellow-500 bg-clip-text text-transparent;
   }
 
   .text-gradient-pokemon {
-    @apply bg-gradient-to-br from-red-600 via-yellow-400 to-blue-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-red-600  to-yellow-500 bg-clip-text text-transparent;
   }
 }
