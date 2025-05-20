@@ -1,9 +1,9 @@
 
-export interface User {
-    username: string;
-    avatar: null;
+export interface UserType {
+    name: string;
+    avatar: null | string;
     region: string;
-    joinedDate: string;
+    createdAt: string;
     stats: {
         captured: number;
         totalPokemon: number;

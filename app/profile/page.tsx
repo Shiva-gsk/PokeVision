@@ -1,3 +1,4 @@
+"use client"
 import type React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -7,6 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
 import Link from "next/link"
 import { Camera, MapPin, Trophy, User } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useEffect, useState } from "react"
+import { UserType } from "@/types"
 
 // Mock user data
 const user = {
@@ -51,20 +55,51 @@ const typeColors: Record<string, string> = {
 }
 
 export default function ProfilePage() {
+  const { data: session } = useSession()
+  const [user, setUser] = useState<null | UserType>(null)
+
+   useEffect(() => {
+    if (session) {
+      console.log(session.user?.id);
+      // Fetch user data from your API or database
+      // For now, we'll use the mock data
+      setUser({
+        ...user,
+        name: session.user?.name || "Ash Ketchum",
+        
+        avatar: session.user?.image || null,
+        region:  "Kanto",
+        createdAt: "May 2023",
+        stats: {
+          ...user?.stats,
+          captured: user?.stats.captured || 0,
+          totalPokemon: user?.stats.totalPokemon || 0,
+          badges: user?.stats.badges || 0,
+          rare: user?.stats.rare || 0,
+        },
+      })
+    }
+  }, [session]);
+
+
+
+  // console.log(session);
   return (
-    <div className="container mx-auto px-4 py-6 sm:py-8">
+    <>
+    
+    {(!user)? <>Loading...</> : <div className="container mx-auto px-4 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto">
         {/* Profile Header */}
         <Card className="mb-4 sm:mb-6">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 sm:gap-6">
               <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
-                <AvatarImage src={user.avatar || ""} alt={user.username} />
-                <AvatarFallback className="text-xl sm:text-2xl">{user.username.substring(0, 2)}</AvatarFallback>
+                <AvatarImage src={user.avatar || ""} alt={user?.name} />
+                <AvatarFallback className="text-xl sm:text-2xl">{user?.name.substring(0, 2)}</AvatarFallback>
               </Avatar>
 
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-xl sm:text-2xl font-bold text-gradient-pokemon">{user.username}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gradient-pokemon">{user?.name}</h1>
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
                   <Badge variant="outline" className="flex items-center gap-1 text-xs">
                     <MapPin className="h-3 w-3" />
@@ -72,7 +107,7 @@ export default function ProfilePage() {
                   </Badge>
                   <Badge variant="outline" className="flex items-center gap-1 text-xs">
                     <User className="h-3 w-3" />
-                    Joined {user.joinedDate}
+                    Joined {user.createdAt}
                   </Badge>
                 </div>
 
@@ -81,22 +116,22 @@ export default function ProfilePage() {
                     icon={<Camera className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />}
                     value={user.stats.captured}
                     label="Captured"
-                  />
+                    />
                   <StatCard
                     icon={<div className="text-base sm:text-lg">📊</div>}
                     value={`${Math.round((user.stats.captured / user.stats.totalPokemon) * 100)}%`}
                     label="Completion"
-                  />
+                    />
                   <StatCard
                     icon={<Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />}
                     value={user.stats.badges}
                     label="Badges"
-                  />
+                    />
                   <StatCard
                     icon={<div className="text-base sm:text-lg">⭐</div>}
                     value={user.stats.rare}
                     label="Rare Finds"
-                  />
+                    />
                 </div>
               </div>
             </div>
@@ -132,8 +167,8 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {badges.map((badge) => (
                     <div
-                      key={badge.id}
-                      className={`p-4 border rounded-lg text-center ${badge.obtained ? "" : "opacity-50 grayscale"}`}
+                    key={badge.id}
+                    className={`p-4 border rounded-lg text-center ${badge.obtained ? "" : "opacity-50 grayscale"}`}
                     >
                       <div className="relative h-12 w-12 mx-auto mb-2">
                         <Image
@@ -141,7 +176,7 @@ export default function ProfilePage() {
                           alt={badge.name}
                           fill
                           className="object-contain"
-                        />
+                          />
                       </div>
                       <h3 className="font-medium text-sm">{badge.name}</h3>
                       {badge.obtained && <p className="text-xs text-gray-500 mt-1">{badge.date}</p>}
@@ -168,7 +203,7 @@ export default function ProfilePage() {
                             alt={pokemon.name}
                             fill
                             className="object-contain"
-                          />
+                            />
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between">
@@ -176,7 +211,7 @@ export default function ProfilePage() {
                               <h3 className="font-medium">{pokemon.name}</h3>
                               <Badge
                                 className={`${typeColors[pokemon.type] || "bg-gray-400"} hover:${typeColors[pokemon.type] || "bg-gray-400"} mt-1`}
-                              >
+                                >
                                 {pokemon.type}
                               </Badge>
                             </div>
@@ -193,6 +228,8 @@ export default function ProfilePage() {
         </Tabs>
       </div>
     </div>
+    }
+</>
   )
 }
 
