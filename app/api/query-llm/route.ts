@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     })
 
     const message = response.choices?.[0]?.message?.content
-    console.log('API response:', message);
+    console.log(message);
     return NextResponse.json({ response: message || 'No content returned' })
   } catch (err: any) {
     console.error('API error:', err)
