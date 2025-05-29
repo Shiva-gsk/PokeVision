@@ -11,3 +11,12 @@ export interface UserType {
         rare: number;
     };
 }
+
+interface Pokemon {
+  id: number
+  name: string
+  image: string
+  type: string
+  captured: boolean
+  createdAt: string | null
+}

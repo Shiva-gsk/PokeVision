@@ -14,7 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -23,20 +22,25 @@ model User {
   image         String?
   password      String?
   accounts      Account[]
-  avatar        String?  @default("https://i.imgur.com/4M8Y1g5.png")
-  region       String?  @default("Kanto")
-  stats       Json?
+  avatar        String?   @default("https://i.imgur.com/4M8Y1g5.png")
+  region        String?   @default("Kanto")
+  stats         Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Pokemon Pokemon[]
 }
 
-model Pokemon{
-  id            String    @id @default(cuid())
-  name          String?
-  type         String?
-  stats       Json?
-  imgUrl       String?
+model Pokemon {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  type      String?
+  stats     Json?
+  imgUrl    String?
+  captured  Boolean  @default(false)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

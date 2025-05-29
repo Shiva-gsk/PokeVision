@@ -62,6 +62,7 @@ export default function CapturePage() {
           prompt: `You are a Pokédex assistant. Analyze the following Pokémon image and return a JSON object in the following format:
 
           {
+            "id": number,
             "name": string,
             "confidence": number (0.0 to 1.0),
             "description": string,
@@ -82,7 +83,8 @@ export default function CapturePage() {
 
       const data = await res.json();
       try {
-        const parsed = JSON.parse(data.response);
+        // const parsed = JSON.parse(data.response);
+        const parsed = data.response; // Assuming the API returns a valid JSON string
         console.log("API response:", parsed);
         setResult(parsed)
       } catch (e) {

@@ -5,14 +5,15 @@ import OpenAI from 'openai'
 const token = process.env.GITHUB_TOKEN
 const endpoint = 'https://models.github.ai/inference'
 const modelName = 'openai/gpt-4o-mini'
-
-
+import { db } from '@/lib/db'
+import { auth } from '@/auth'
 const openai = new OpenAI({
   apiKey: token,
   baseURL: endpoint,
 })
 
 export async function POST(req: Request) {
+  const session = await auth();
   try {
     const { imageBase64, prompt } = await req.json()
 
@@ -40,8 +41,32 @@ export async function POST(req: Request) {
       temperature: 0.7,
       top_p: 1.0,
     })
-
-    const message = response.choices?.[0]?.message?.content
+    // let message = response.choices?.[0]?.message?.content
+    const message = JSON.parse(response.choices?.[0]?.message?.content || '{}');
+    const existingPoke = await db.pokemon.findUnique({
+      where: { id: message?.id || 0 } // Ensure id is a number
+    });
+    if(!existingPoke){
+      const poke = await db.pokemon.create({
+        data: {
+          id: message?.id || 0, // Ensure id is a number
+          name: message?.name || 'Unknown',
+          imgUrl: message?.image || '',
+          type: message?.type || 'Unknown',
+          captured: true, // Default to false, can be updated later
+          userId: session?.user.id
+        }
+      })
+    }
+    else{
+      await db.pokemon.update({
+        where: { id: existingPoke.id },
+        data: {
+          captured: true, // Update captured status
+          createdAt: new Date().toISOString(), // Update capture date
+        }
+      })
+    }
     console.log(message);
     return NextResponse.json({ response: message || 'No content returned' })
   } catch (err: any) {
