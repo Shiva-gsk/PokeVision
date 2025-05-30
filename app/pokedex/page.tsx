@@ -64,13 +64,15 @@ const typeColors: Record<string, string> = {
 
 export default function PokedexPage() {
   const [pokemonEntries, setPokemon] = useState<Pokemon[]>([]);
+  const [searchPokemon, setSearchPokemon] = useState<Pokemon[]>([]);
   // const [offset, setOffset] = useState(0);
    const [currentPage, setCurrentPage] = useState(1);
    const [capturedPokemon, setCapturedPokemon] = useState<Captured []>([]);
-   const [searchTerm, seSearchTerms] = useState<string>("");
+   const [searchTerm, setSearchTerm] = useState<string>("");
    const { data: session } = useSession();
   // const [limit, setLimit] = useState(10);
   let offset = (currentPage-1) * 10;
+
   useEffect(()=>{
     async function loadCaptured() {
 
@@ -88,7 +90,43 @@ export default function PokedexPage() {
     }
     loadCaptured();
 
-  }, [session])
+  }, [session]);
+  
+
+  useEffect(() => {
+    async function fetchSearchPokemon() {
+     
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10000`);
+      const data = await res.json();
+      const pokemonData = await Promise.all(
+        data.results.filter((pokemon: any) => {
+          const id = pokemon.url.split("/").slice(-2)[0];
+          if (searchTerm) {
+            return (
+              pokemon.name.toLowerCase().includes(searchTerm.toLowerCase()) || id.includes(searchTerm)
+            );
+          }
+          return false;
+        }).map(async (pokemon: any, index: number) => {
+          const id = pokemon.url.split("/").slice(-2)[0];
+          const captured = capturedPokemon.filter((poke) => poke.id == id);
+          return {
+            id,
+            name: pokemon.name,
+            type: captured.length > 0 ? captured[0].type[0] : "Unknown",
+            type2: captured.length > 0 ? captured[0].type[1] : null,
+            image: captured.length > 0 ? captured[0].image : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+            captured: captured.length > 0,
+            createdAt: captured.length > 0 ? captured[0].createdAt : null,
+          };
+        })
+      );
+      setSearchPokemon(pokemonData);
+      console.log(capturedPokemon)
+    }
+    fetchSearchPokemon();
+  }, [capturedPokemon, searchTerm]);
+
   useEffect(() => {
     async function fetchPokemon() {
      
@@ -110,7 +148,7 @@ export default function PokedexPage() {
         })
       );
       setPokemon(pokemonData);
-      console.log(capturedPokemon)
+      // console.log(capturedPokemon)
     }
     fetchPokemon();
   }, [offset, currentPage, capturedPokemon]);
@@ -228,11 +266,15 @@ export default function PokedexPage() {
           <Input
             placeholder="Search Pokémon by name or number..."
             className="pl-10"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
             />
         </div>
             </div>
+      {(searchTerm.length) >0? <PokeList pokemonEntries={searchPokemon} /> :<> <PokeList pokemonEntries={pokemonEntries} />
       
-      <PokeList pokemonEntries={pokemonEntries} />
       <Pagination>
         <PaginationItem>
           <PaginationPrevious
@@ -260,6 +302,7 @@ export default function PokedexPage() {
           />
         </PaginationItem>
       </Pagination>
+      </>}
 
 
     </div>

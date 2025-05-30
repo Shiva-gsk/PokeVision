@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         data: {
           id: message?.id || 0, // Ensure id is a number
           name: message?.name || 'Unknown',
-          imgUrl: message?.image || '',
+          imgUrl: imageBase64 ,
           type: message?.type || 'Unknown',
           captured: true, // Default to false, can be updated later
           userId: session?.user.id
