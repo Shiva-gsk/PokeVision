@@ -20,3 +20,10 @@ interface Pokemon {
   captured: boolean
   createdAt: string | null
 }
+
+interface Captured {
+  id: number
+  image: string
+  type: string
+  createdAt: string | null
+}

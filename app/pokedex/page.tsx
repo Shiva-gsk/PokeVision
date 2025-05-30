@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Pokemon } from "@/types";
+import { Captured, Pokemon } from "@/types";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from "@/components/ui/pagination";
 import { off } from "process";
 import { db } from "@/lib/db";
@@ -66,7 +66,7 @@ export default function PokedexPage() {
   const [pokemonEntries, setPokemon] = useState<Pokemon[]>([]);
   // const [offset, setOffset] = useState(0);
    const [currentPage, setCurrentPage] = useState(1);
-   const [capturedPokemon, setCapturedPokemon] = useState<number []>([]);
+   const [capturedPokemon, setCapturedPokemon] = useState<Captured []>([]);
    const { data: session } = useSession();
   // const [limit, setLimit] = useState(10);
   let offset = (currentPage-1) * 10;
@@ -74,9 +74,14 @@ export default function PokedexPage() {
     async function loadCaptured() {
 
       const captured = await getPokemon();
-       const list: number[] = [];
+       const list: Captured[] = [];
        captured.map((poke) => {
-         list.push(poke.id);
+         list.push({
+           id: poke.id,
+           image: poke.imgUrl || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.id}.png`,
+           type: poke.type || "Unknown",
+           createdAt: poke.createdAt.toISOString() || null,
+         });
        });
        setCapturedPokemon(list);
     }
@@ -91,14 +96,14 @@ export default function PokedexPage() {
       const pokemonData = await Promise.all(
         data.results.map(async (pokemon: any, index: number) => {
           const id = index + 1 + offset;
-          const captured = capturedPokemon.includes(id);
+          const captured = capturedPokemon.filter((poke) => poke.id === id);
           return {
             id,
             name: pokemon.name,
-            type: pokemon.type || "Unknown",
-            image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
-            captured,
-            createdAt: captured ? "2023-05-15" : null,
+            type: captured.length > 0 ? captured[0].type : "Unknown",
+            image: captured.length > 0 ? captured[0].image : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+            captured: captured.length > 0,
+            createdAt: captured.length > 0 ? captured[0].createdAt : null,
           };
         })
       );
