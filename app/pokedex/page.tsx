@@ -67,6 +67,7 @@ export default function PokedexPage() {
   // const [offset, setOffset] = useState(0);
    const [currentPage, setCurrentPage] = useState(1);
    const [capturedPokemon, setCapturedPokemon] = useState<Captured []>([]);
+   const [searchTerm, seSearchTerms] = useState<string>("");
    const { data: session } = useSession();
   // const [limit, setLimit] = useState(10);
   let offset = (currentPage-1) * 10;
@@ -79,8 +80,8 @@ export default function PokedexPage() {
          list.push({
            id: poke.id,
            image: poke.imgUrl || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.id}.png`,
-           type: poke.type || "Unknown",
-           createdAt: poke.createdAt.toISOString() || null,
+           type: poke.type ? poke.type.split("/") : ["Unknown"],
+           createdAt: poke.createdAt.toLocaleDateString() || null,
          });
        });
        setCapturedPokemon(list);
@@ -100,7 +101,8 @@ export default function PokedexPage() {
           return {
             id,
             name: pokemon.name,
-            type: captured.length > 0 ? captured[0].type : "Unknown",
+            type: captured.length > 0 ? captured[0].type[0] : "Unknown",
+            type2: captured.length > 0 ? captured[0].type[1] : null,
             image: captured.length > 0 ? captured[0].image : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
             captured: captured.length > 0,
             createdAt: captured.length > 0 ? captured[0].createdAt : null,
@@ -214,7 +216,22 @@ export default function PokedexPage() {
     //     </div>
     //   </div>
     // </div>
-    <div className="mb-4">
+
+    <div className="m-4">
+      <div className="max-w-3xl mx-auto">
+
+      <h1 className="text-3xl font-bold text-center text-gradient-pokemon mb-8">
+        Your Pokédex
+      </h1>
+       <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Input
+            placeholder="Search Pokémon by name or number..."
+            className="pl-10"
+            />
+        </div>
+            </div>
+      
       <PokeList pokemonEntries={pokemonEntries} />
       <Pagination>
         <PaginationItem>
@@ -264,18 +281,10 @@ function PokeList({ pokemonEntries }: { pokemonEntries: Pokemon[] }) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Update the heading with the gradient effect */}
-      <h1 className="text-3xl font-bold text-center text-gradient-pokemon mb-8">
-        Your Pokédex
-      </h1>
+      
 
       <div className="max-w-3xl mx-auto">
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Search Pokémon by name or number..."
-            className="pl-10"
-          />
-        </div>
+       
 
         {/* Make the Pokédex grid more responsive */}
         <div className="grid grid-cols-1 gap-3 sm:gap-4">
@@ -308,6 +317,15 @@ function PokeList({ pokemonEntries }: { pokemonEntries: Pokemon[] }) {
                           >
                             {pokemon.type}
                           </Badge>
+                          {pokemon.type2 && (
+                            <Badge
+                              className={`${typeColors[pokemon.type2] || "bg-gray-400"
+                                } hover:${typeColors[pokemon.type2] || "bg-gray-400"
+                                } text-xs`}
+                            >
+                              {pokemon.type2}
+                            </Badge>
+                          )}
                           <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                             #{pokemon.id.toString().padStart(3, "0")}
                           </span>

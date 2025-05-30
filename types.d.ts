@@ -17,6 +17,7 @@ interface Pokemon {
   name: string
   image: string
   type: string
+  type2: string | null
   captured: boolean
   createdAt: string | null
 }
@@ -24,6 +25,6 @@ interface Pokemon {
 interface Captured {
   id: number
   image: string
-  type: string
+  type: string []
   createdAt: string | null
 }
