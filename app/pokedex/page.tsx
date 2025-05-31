@@ -60,6 +60,19 @@ const typeColors: Record<string, string> = {
   Water: "bg-blue-500",
   Electric: "bg-yellow-400",
   Grass: "bg-green-500",
+  Ice: "bg-cyan-300",
+  Fighting: "bg-red-700",
+  Poison: "bg-purple-600",
+  Ground: "bg-yellow-700",
+  Flying: "bg-indigo-300",
+  Psychic: "bg-pink-500",
+  Bug: "bg-lime-500",
+  Rock: "bg-yellow-800",
+  Ghost: "bg-indigo-700",
+  Dragon: "bg-purple-800",
+  Dark: "bg-gray-800",
+  Steel: "bg-gray-500",
+  Fairy: "bg-pink-300"
 };
 
 export default function PokedexPage() {
