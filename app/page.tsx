@@ -11,10 +11,10 @@ export default function Home() {
       <section className="py-12 md:py-20 flex flex-col items-center text-center">
         <div className="relative w-24 h-24 mb-6">
           <Image
-            src="/placeholder.svg?height=96&width=96"
+            src="/HeroImg.png"
             alt="PokéVision Logo"
             fill
-            className="object-contain"
+            className="object-contain "
             priority
           />
         </div>
