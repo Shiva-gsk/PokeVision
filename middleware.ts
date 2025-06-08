@@ -25,13 +25,15 @@ export async function middleware(req: NextRequest) {
   if(isAuth){
     if(isLoggedIn){
       console.log("is logged in");
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      const redirect = nextUrl.searchParams.get("callbackUrl");
+      return Response.redirect(new URL(redirect || DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return undefined;
   }
 
   if (!isPublic && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    const callbackUrl = encodeURIComponent(nextUrl.pathname + nextUrl.search);
+    return NextResponse.redirect(new URL("/auth/login?callbackUrl=" + callbackUrl, req.url));
   }
 
   return NextResponse.next();

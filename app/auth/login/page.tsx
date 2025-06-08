@@ -21,12 +21,14 @@ import { useState, useTransition } from "react";
 import FormError from "@/components/auth/form-error";
 import FormSuccess from "@/components/auth/form-success";
 import { login } from "@/actions/login";
+import { useSearchParams } from "next/navigation";
 
 export default function Login() {
   const [success, setsuccess] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
   const [isPending, setTransition] = useTransition();
-
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -36,8 +38,9 @@ export default function Login() {
   });
 
   const OnSubmit = (values : z.infer<typeof LoginSchema>) =>{
+    
     setTransition(() =>{
-      login(values)
+      login(values, callbackUrl)
         .then((data) => {
           setError(data.error);
           setsuccess(data.success);
