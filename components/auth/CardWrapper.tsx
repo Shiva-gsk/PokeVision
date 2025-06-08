@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardFooter, CardTitle} from '../ui/card'
 // import Header from './Header'
 import { Button } from '../ui/button'
@@ -21,13 +21,16 @@ const CardWrapper = ({children, headerLabel, backButtonLabel, backButtonLink, sh
         <CardHeader>
             <CardTitle><div className={cn("w-")}>{headerLabel}</div></CardTitle>
         </CardHeader>
-        <CardContent>
-            {children}
-        </CardContent>
-        {showSocial && <CardFooter className='w-full'><Social/></CardFooter>}
-        <CardFooter >
-            <Button variant="link"><Link href={backButtonLink}>{backButtonLabel}</Link></Button>
-        </CardFooter>
+        <Suspense fallback={<>fallback</>}>
+            <CardContent>
+                {children}
+            </CardContent>
+            {showSocial && <CardFooter className='w-full'><Social/></CardFooter>}
+            <CardFooter >
+                <Button variant="link"><Link href={backButtonLink}>{backButtonLabel}</Link></Button>
+            </CardFooter>
+
+        </Suspense>
     </Card>
   )
 }
