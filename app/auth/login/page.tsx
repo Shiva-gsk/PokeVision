@@ -1,7 +1,7 @@
 "use client"
 import { Suspense } from "react";
 import Login from "@/components/pages/Login";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
 

@@ -71,7 +71,10 @@ export default function CapturePage() {
               "hp": number,
               "attack": number,
               "defense": number,
-              "speed": number
+              "specialAttack": number,
+              "specialDefense": number,
+              "speed": number,
+
             }
           }
 

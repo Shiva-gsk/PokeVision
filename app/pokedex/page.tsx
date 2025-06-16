@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { useSession } from "next-auth/react";
 import { create } from "domain";
 import { getPokemon } from "@/data/pokemon";
+import React from "react";
 
 // // Mock data for Pokédex entries
 // const pokemonEntries = [
@@ -79,36 +80,36 @@ export default function PokedexPage() {
   const [pokemonEntries, setPokemon] = useState<Pokemon[]>([]);
   const [searchPokemon, setSearchPokemon] = useState<Pokemon[]>([]);
   // const [offset, setOffset] = useState(0);
-   const [currentPage, setCurrentPage] = useState(1);
-   const [capturedPokemon, setCapturedPokemon] = useState<Captured []>([]);
-   const [searchTerm, setSearchTerm] = useState<string>("");
-   const { data: session } = useSession();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [capturedPokemon, setCapturedPokemon] = useState<Captured[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { data: session } = useSession();
   // const [limit, setLimit] = useState(10);
-  let offset = (currentPage-1) * 10;
+  let offset = (currentPage - 1) * 10;
 
-  useEffect(()=>{
+  useEffect(() => {
     async function loadCaptured() {
 
       const captured = await getPokemon();
-       const list: Captured[] = [];
-       captured.map((poke) => {
-         list.push({
-           id: poke.id,
-           image: poke.imgUrl || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.id}.png`,
-           type: poke.type ? poke.type.split("/") : ["Unknown"],
-           createdAt: poke.createdAt.toLocaleDateString() || null,
-         });
-       });
-       setCapturedPokemon(list);
+      const list: Captured[] = [];
+      captured.map((poke) => {
+        list.push({
+          id: poke.id,
+          image: poke.imgUrl || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.id}.png`,
+          type: poke.type ? poke.type.split("/") : ["Unknown"],
+          createdAt: poke.createdAt.toLocaleDateString() || null,
+        });
+      });
+      setCapturedPokemon(list);
     }
     loadCaptured();
 
   }, [session]);
-  
+
 
   useEffect(() => {
     async function fetchSearchPokemon() {
-     
+
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10000`);
       const data = await res.json();
       const pokemonData = await Promise.all(
@@ -142,7 +143,7 @@ export default function PokedexPage() {
 
   useEffect(() => {
     async function fetchPokemon() {
-     
+
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`);
       const data = await res.json();
       const pokemonData = await Promise.all(
@@ -177,7 +178,7 @@ export default function PokedexPage() {
     );
   }
   const totalPages = 1000;
- 
+
   const maxPageButtons = 3;
 
   const getPageNumbers = () => {
@@ -271,10 +272,10 @@ export default function PokedexPage() {
     <div className="m-4">
       <div className="max-w-3xl mx-auto">
 
-      <h1 className="text-3xl font-bold text-center text-gradient-pokemon mb-8">
-        Your Pokédex
-      </h1>
-       <div className="relative mb-6">
+        <h1 className="text-3xl font-bold text-center text-gradient-pokemon mb-8">
+          Your Pokédex
+        </h1>
+        <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search Pokémon by name or number..."
@@ -283,38 +284,38 @@ export default function PokedexPage() {
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}
-            />
+          />
         </div>
-            </div>
-      {(searchTerm.length) >0? <PokeList pokemonEntries={searchPokemon} /> :<> <PokeList pokemonEntries={pokemonEntries} />
-      
-      <Pagination>
-        <PaginationItem>
-          <PaginationPrevious
-            
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          />
-        </PaginationItem>
+      </div>
+      {(searchTerm.length) > 0 ? <PokeList pokemonEntries={searchPokemon} capturedPokemon={capturedPokemon} /> : <> <PokeList pokemonEntries={pokemonEntries} capturedPokemon={capturedPokemon} />
 
-        {getPageNumbers().map((pageNum) => (
-          <PaginationItem key={pageNum}>
-            <PaginationLink
-             
-              isActive={pageNum === currentPage}
-              onClick={() => setCurrentPage(pageNum)}
-            >
-              {pageNum}
-            </PaginationLink>
+        <Pagination>
+          <PaginationItem>
+            <PaginationPrevious
+
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            />
           </PaginationItem>
-        ))}
 
-        <PaginationItem>
-          <PaginationNext
-          
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          />
-        </PaginationItem>
-      </Pagination>
+          {getPageNumbers().map((pageNum) => (
+            <PaginationItem key={pageNum}>
+              <PaginationLink
+
+                isActive={pageNum === currentPage}
+                onClick={() => setCurrentPage(pageNum)}
+              >
+                {pageNum}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            />
+          </PaginationItem>
+        </Pagination>
       </>}
 
 
@@ -322,7 +323,7 @@ export default function PokedexPage() {
   );
 }
 
-function PokeList({ pokemonEntries }: { pokemonEntries: Pokemon[] }) {
+const PokeList = React.memo(function PokeList({ pokemonEntries, capturedPokemon }: { pokemonEntries: Pokemon[], capturedPokemon: Captured[] }) {
   if (pokemonEntries.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -336,75 +337,75 @@ function PokeList({ pokemonEntries }: { pokemonEntries: Pokemon[] }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Update the heading with the gradient effect */}
-      
-
       <div className="max-w-3xl mx-auto">
-       
-
         {/* Make the Pokédex grid more responsive */}
         <div className="grid grid-cols-1 gap-3 sm:gap-4">
-          {pokemonEntries.map((pokemon) => (
-            <Link href={`/pokedex/${pokemon.id}`} key={pokemon.id}>
-              <Card
-                className={`cursor-pointer transition-all hover:shadow-md ${!pokemon.captured ? "opacity-60 grayscale" : ""
-                  }`}
-              >
-                <CardContent className="p-3 sm:p-4 flex items-center">
-                  <div className="relative h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 flex-shrink-0">
-                    <Image
-                      src={pokemon.image}
-                      alt={pokemon.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium text-sm sm:text-base">
-                          {pokemon.name}
-                        </h3>
-                        <div className="flex items-center mt-1">
-                          <Badge
-                            className={`${typeColors[pokemon.type] || "bg-gray-400"
-                              } hover:${typeColors[pokemon.type] || "bg-gray-400"
-                              } text-xs`}
-                          >
-                            {pokemon.type}
-                          </Badge>
-                          {pokemon.type2 && (
+          {pokemonEntries.map((pokemon) => {
+            const captured = capturedPokemon.filter((poke) => poke.id === pokemon.id);
+            let href = "";
+            if(captured.length > 0) href = `/pokedex/${pokemon.id}`;
+            return (
+              <Link href={href} key={pokemon.id}>
+                <Card
+                  className={`cursor-pointer transition-all hover:shadow-md ${!pokemon.captured ? "opacity-60 grayscale" : ""
+                    }`}
+                >
+                  <CardContent className="p-3 sm:p-4 flex items-center">
+                    <div className="relative h-12 w-12 sm:h-16 sm:w-16 mr-3 sm:mr-4 flex-shrink-0">
+                      <Image
+                        src={pokemon.image}
+                        alt={pokemon.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium text-sm sm:text-base">
+                            {pokemon.name}
+                          </h3>
+                          <div className="flex items-center mt-1">
                             <Badge
-                              className={`${typeColors[pokemon.type2] || "bg-gray-400"
-                                } hover:${typeColors[pokemon.type2] || "bg-gray-400"
+                              className={`${typeColors[pokemon.type] || "bg-gray-400"
+                                } hover:${typeColors[pokemon.type] || "bg-gray-400"
                                 } text-xs`}
                             >
-                              {pokemon.type2}
+                              {pokemon.type}
                             </Badge>
+                            {pokemon.type2 && (
+                              <Badge
+                                className={`${typeColors[pokemon.type2] || "bg-gray-400"
+                                  } hover:${typeColors[pokemon.type2] || "bg-gray-400"
+                                  } text-xs`}
+                              >
+                                {pokemon.type2}
+                              </Badge>
+                            )}
+                            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                              #{pokemon.id.toString().padStart(3, "0")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right text-xs text-gray-500 dark:text-gray-400">
+                          {pokemon.captured ? (
+                            <>
+                              <span className="block">Captured</span>
+                              <span>{pokemon.createdAt}</span>
+                            </>
+                          ) : (
+                            <span>Not captured</span>
                           )}
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                            #{pokemon.id.toString().padStart(3, "0")}
-                          </span>
                         </div>
                       </div>
-                      <div className="text-right text-xs text-gray-500 dark:text-gray-400">
-                        {pokemon.captured ? (
-                          <>
-                            <span className="block">Captured</span>
-                            <span>{pokemon.createdAt}</span>
-                          </>
-                        ) : (
-                          <span>Not captured</span>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
   );
-}
+});

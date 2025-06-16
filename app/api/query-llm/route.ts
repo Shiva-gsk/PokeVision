@@ -54,7 +54,15 @@ export async function POST(req: Request) {
           imgUrl: imageBase64 ,
           type: message?.type || 'Unknown',
           captured: true, // Default to false, can be updated later
-          userId: session?.user.id
+          userId: session?.user.id,
+          stats: {
+            hp: message?.stats?.hp || 0,
+            attack: message?.stats?.attack || 0,
+            defense: message?.stats?.defense || 0,
+            specialAttack: message?.stats?.specialAttack || 0,
+            specialDefense: message?.stats?.specialDefense || 0,
+            speed: message?.stats?.speed || 0,
+          }
         }
       })
     }
