@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class"  enableSystem disableTransitionOnChange>
           <SessionProvider>
-          <div className="flex min-h-screen flex-col">
+          <div className="overflow-hidden flex flex-col min-h-screen">
             
             <Navbar />
             <main className="flex-1">{children}</main>

@@ -6,7 +6,7 @@ import { ArrowRight, Camera, Trophy, User } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 ">
       {/* Hero Section */}
       <section className="py-12 md:py-20 flex flex-col items-center text-center">
         <div className="relative w-24 h-24 mb-6">
