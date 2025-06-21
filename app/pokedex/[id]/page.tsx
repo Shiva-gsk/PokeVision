@@ -2,7 +2,8 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Card, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
-
+// import { Legend, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart } from "recharts";
+import  RadarChartRecharts  from "@/components/charts/Rechart";
 interface PokemonProps {
     params: { id: string };
 }
@@ -12,6 +13,15 @@ async function getPokemon(id: string) {
     if (!res.ok) return null;
     return res.json();
 }
+
+const data = [
+  { subject: 'Math', A: 120, B: 110, fullMark: 150, },
+  { subject: 'Chinese', A: 98, B: 130, fullMark: 150,},
+  { subject: 'English', A: 86, B: 130, fullMark: 150,},
+  { subject: 'Geography', A: 99, B: 100, fullMark: 150,},
+  { subject: 'Physics', A: 85, B: 90, fullMark: 150, },
+  { subject: 'History', A: 65, B: 85, fullMark: 150,},
+];
 
 function capitalize(str: string| undefined): string {
   if (typeof str !== "string") return "";
@@ -91,7 +101,7 @@ export default async function PokemonPage({ params }: PokemonProps) {
 
             </div>
             <div className="bg-green-400 mx-auto max-w-7xl p-8 mt-6">
-
+                <RadarChartRecharts />
             </div>
 
         </>
