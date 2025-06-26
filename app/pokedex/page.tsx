@@ -139,11 +139,12 @@ export default function PokedexPage() {
       console.log(capturedPokemon)
     }
     fetchSearchPokemon();
+    // console.log("Search Pokemon: ", searchPokemon);
   }, [capturedPokemon, searchTerm]);
-
+  
   useEffect(() => {
     async function fetchPokemon() {
-
+      
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`);
       const data = await res.json();
       const pokemonData = await Promise.all(
@@ -193,7 +194,8 @@ export default function PokedexPage() {
 
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
-
+  // console.log("Captured Pokemon: ", capturedPokemon);
+  // console.log("Pokemon Entries: ", pokemonEntries);
   return (
     // <div className="container mx-auto px-4 py-8">
     //   {/* Update the heading with the gradient effect */}
@@ -343,7 +345,7 @@ const PokeList = React.memo(function PokeList({ pokemonEntries, capturedPokemon 
           {pokemonEntries.map((pokemon) => {
             const captured = capturedPokemon.filter((poke) => poke.id === pokemon.id);
             let href = "";
-            if(captured.length > 0) href = `/pokedex/${pokemon.id}`;
+             href = `/pokedex/${pokemon.id}`;
             return (
               <Link href={href} key={pokemon.id}>
                 <Card

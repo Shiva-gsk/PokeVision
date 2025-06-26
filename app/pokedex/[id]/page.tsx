@@ -11,17 +11,18 @@ interface PokemonProps {
 async function getPokemon(id: string) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!res.ok) return null;
-    return res.json();
+    const pokemon = await res.json();
+    console.log(pokemon.stats);
+    const stats = pokemon.stats.map((stat: any) =>{
+        return {
+            name: stat?.stat.name,
+            value: stat?.base_stat
+        }
+    })
+    console.log(stats);
+    return [pokemon, stats ];
 }
 
-const data = [
-  { subject: 'Math', A: 120, B: 110, fullMark: 150, },
-  { subject: 'Chinese', A: 98, B: 130, fullMark: 150,},
-  { subject: 'English', A: 86, B: 130, fullMark: 150,},
-  { subject: 'Geography', A: 99, B: 100, fullMark: 150,},
-  { subject: 'Physics', A: 85, B: 90, fullMark: 150, },
-  { subject: 'History', A: 65, B: 85, fullMark: 150,},
-];
 
 function capitalize(str: string| undefined): string {
   if (typeof str !== "string") return "";
@@ -29,12 +30,13 @@ function capitalize(str: string| undefined): string {
 }
 
 export default async function PokemonPage({ params }: PokemonProps) {
-    
-    const { id } = await params
-    const pokemon = await getPokemon(id);
-    if (!pokemon) {
+
+    const { id } = await params;
+    const output = await getPokemon(id);
+    if (!output) {
         notFound();
     }
+    const [pokemon, stats] = output;
     return (
         // <main className="p-8 justify-center items-center flex flex-col w-full">
         //     <h1 className="text-3xl font-bold capitalize mb-4 w-full max-w-2xl text-center">{pokemon.name}</h1>
@@ -100,8 +102,8 @@ export default async function PokemonPage({ params }: PokemonProps) {
                 
 
             </div>
-            <div className="bg-green-400 mx-auto max-w-7xl p-8 mt-6">
-                <RadarChartRecharts />
+            <div className="bg-green-400 mx-auto max-w-7xl p-8 mt-6 flex items-center justify-center">
+                <RadarChartRecharts stats={stats} />
             </div>
 
         </>
